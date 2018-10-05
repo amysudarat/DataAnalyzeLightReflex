@@ -7,6 +7,7 @@ def importLUX(filePath):
     data_df = data_df.iloc[:,1:3]
     # Add header manually
     data_df.columns = ["time","LUXlightMeter"]
+    data_df['time'] = pd.to_datetime(data_df['time'])
     return data_df
 
 
@@ -14,5 +15,8 @@ def importKINECT(filePath):
     data_df = pd.read_csv(filePath,sep="\t",skiprows=1,header=None)   
     # Add header manually
     data_df.columns = ["time","LUXkinect"]
+    data_df['time'] = pd.to_datetime(data_df['time'])
     return data_df
+
+
     
