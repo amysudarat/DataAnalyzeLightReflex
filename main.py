@@ -18,7 +18,7 @@ KinectOffMed = importData.importKINECT(r"Data\Kinect_lightOFF_median.txt")
 #print(LUXdata_df.head(5))
 #print(KinectData_df.head(5))
 
-'''Check dtype of columns'''
+"""Check dtype of columns"""
 # print(LUXdata_df.dtypes)
 # print(KinectData_df.dtypes)
 # print(KinectTest_df.head(5))
