@@ -8,19 +8,25 @@ import plotData
 import importData
 
 """Import Data"""
-LUXonAvg = importData.importLUX(r"Data\LUXmeter_lightON_avg.txt")
+#LUXonAvg = importData.importLUX(r"Data\LUXmeter_lightON_avg.txt")
 #LUXonMed = importData.importLUX(r"Data\LUXmeter_lightON_median.txt")
 #LUXoffAvg = importData.importLUX(r"Data\LUXmeter_lightOFF_avg.txt")
 #LUXoffMed = importData.importLUX(r"Data\LUXmeter_lightOFF_median.txt")
-KinectOnAvg = importData.importKINECT(r"Data\Kinect_lightON_avg.txt")
+#KinectOnAvg = importData.importKINECT(r"Data\Kinect_lightON_avg.txt")
 #KinectOnMed = importData.importKINECT(r"Data\Kinect_lightON_median.txt")
 #KinectOffAvg = importData.importKINECT(r"Data\Kinect_lightOFF_avg.txt")
 #KinectOffMed = importData.importKINECT(r"Data\Kinect_lightOFF_median.txt")
+LUXonAvgLong = importData.importLUX(r"Data\LUXmeter_lightON_avg_200samples.txt")
+KinectOnAvgLong = importData.importKINECT(r"Data\Kinect_lightON_avg_200samples.txt")
+
+""" Plug-in the file you want to use here """
+KinectOnAvg = KinectOnAvgLong
+LUXonAvg = LUXonAvgLong
 
 """Down sample to 1 second"""
-#plotData.plotLUXcompared(LUXonAvg,KinectOnAvg,'LightMeter (Light ON, Average)','Kinect')
+plotData.plotLUXcompared(LUXonAvg,KinectOnAvg,'LightMeter (Light ON, Average)','Kinect')
 KinectOnAvg = KinectOnAvg.resample('1S').median()
-#plotData.plotLUXcompared(LUXonAvg,KinectOnAvg,'LightMeter (Light ON, Average) Resampling','Kinect')
+plotData.plotLUXcompared(LUXonAvg,KinectOnAvg,'LightMeter (Light ON, Average) Resampling','Kinect')
 
 """Put two signals to one dataframe"""
 corr_df = pd.DataFrame()
@@ -52,12 +58,12 @@ print(delay_index_lk_dropna)
 # with NaN
 k = corr_df.drop(columns=['LUXmeter'])
 l = corr_df.drop(columns=['Kinect'])
-#plotData.plotLUXcompared(l,k,'plot corr_df before shifting (with NaN)','Kinect')
+plotData.plotLUXcompared(l,k,'plot corr_df before shifting (with NaN)','Kinect')
 k = k.shift(periods=delay_index_lk)
 #plotData.plotLUXcompared(l,k,'after shifting kinect shift (with NaN)','Kinect')
 k['LUXmeter'] = l['LUXmeter']
 k = k.dropna()
-#plotData.plotLUXcompared(k.drop(columns=['Kinect']),k.drop(columns=['LUXmeter']),'plot corr_df before shifting (Full signal)','Kinect')
+plotData.plotLUXcompared(k.drop(columns=['Kinect']),k.drop(columns=['LUXmeter']),'plot corr_df before shifting (Full signal)','Kinect')
 
 # without NaN
 k_dropna = corr_df_dropna.drop(columns=['LUXmeter'])

@@ -13,7 +13,7 @@ def importLUX(filePath):
 
 
 def importKINECT(filePath):
-    data_df = pd.read_csv(filePath,sep="\t",skiprows=1,header=None)   
+    data_df = pd.read_csv(filePath,sep=",",skiprows=1,header=None)   
     # Add header manually
     data_df.columns = ["time","LUX"]
     data_df['time'] = pd.to_datetime(data_df['time'])
