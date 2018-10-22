@@ -32,49 +32,62 @@ corr_df["LUXmeter"] = LUXonAvg["LUX"]
 """ Find Delay using Cross Correlation
 More detail: https://stackoverflow.com/questions/4688715/find-time-shift-between-two-similar-waveforms
 """
-# Drop NaN
-corr_df_dropna = corr_df.dropna()
-# Find delay by performing cross correlation
-delay_index_kl = np.argmax(signal.correlate(corr_df_dropna["Kinect"],corr_df_dropna["LUXmeter"]))-len(corr_df_dropna)-1
-delay_index_lk = np.argmax(signal.correlate(corr_df_dropna["LUXmeter"],corr_df_dropna["Kinect"]))-len(corr_df_dropna)-1
 
+# Find delay by performing cross correlation (with NaN)
+delay_index_kl = np.argmax(signal.correlate(corr_df["Kinect"],corr_df["LUXmeter"]))-len(corr_df)-1
+delay_index_lk = np.argmax(signal.correlate(corr_df["LUXmeter"],corr_df["Kinect"]))-len(corr_df)-1
+print("delay kl,lk (with NaN)")
 print(delay_index_kl)
 print(delay_index_lk)
+# Drop NaN
+corr_df_dropna = corr_df.dropna()
+# Find delay by performing cross correlation (without NaN)
+delay_index_kl_dropna = np.argmax(signal.correlate(corr_df_dropna["Kinect"],corr_df_dropna["LUXmeter"]))-len(corr_df_dropna)-1
+delay_index_lk_dropna = np.argmax(signal.correlate(corr_df_dropna["LUXmeter"],corr_df_dropna["Kinect"]))-len(corr_df_dropna)-1
+print("delay kl,lk (without NaN)")
+print(delay_index_kl_dropna)
+print(delay_index_lk_dropna)
 
 """ Shift Signal Time """ 
+# with NaN
 k = corr_df.drop(columns=['LUXmeter'])
 l = corr_df.drop(columns=['Kinect'])
-plotData.plotLUXcompared(l,k,'plot corr_df before shifting','Kinect')
-
+#plotData.plotLUXcompared(l,k,'plot corr_df before shifting (with NaN)','Kinect')
 k = k.shift(periods=delay_index_lk)
-
-plotData.plotLUXcompared(l,k,'after shifting kinect shift','Kinect')
-
+#plotData.plotLUXcompared(l,k,'after shifting kinect shift (with NaN)','Kinect')
 k['LUXmeter'] = l['LUXmeter']
+k = k.dropna()
+#plotData.plotLUXcompared(k.drop(columns=['Kinect']),k.drop(columns=['LUXmeter']),'plot corr_df before shifting (Full signal)','Kinect')
 
-""" Find Linear correlation Pearson """ 
+# without NaN
 k_dropna = corr_df_dropna.drop(columns=['LUXmeter'])
 l_dropna = corr_df_dropna.drop(columns=['Kinect'])
-l_dropna = l_dropna.shift(periods=delay_index_lk)
+#plotData.plotLUXcompared(l_dropna,k_dropna,'plot corr_df before shifting (without NaN)','Kinect')
+k_dropna = k_dropna.shift(periods=delay_index_lk_dropna)
+#plotData.plotLUXcompared(l_dropna,k_dropna,'plot corr_df before shifting (without NaN)','Kinect')
 k_dropna['LUXmeter'] = l_dropna['LUXmeter']
-print(l.head(3))
+k_dropna = k_dropna.dropna()
+#plotData.plotLUXcompared(k_dropna.drop(columns=['Kinect']),k_dropna.drop(columns=['LUXmeter']),'plot corr_df before shifting (without NaN)','Kinect')
 
-# full signals
+""" Find Linear correlation Pearson """ 
+# with NaN
 corr = k.corr(method='pearson', min_periods=1)
 m,b = np.polyfit(k_dropna['Kinect'],k_dropna['LUXmeter'],1)
+strOut = "m = %d , b = %d"%(m,b)
+print(strOut)
+#fit = np.polyfit(k_dropna['Kinect'],k_dropna['LUXmeter'],1)
 #fit_fn = np.poly1d(fit)
 
-# drop Nan signals
+# without NaN
 corr_dropna = k_dropna.corr(method='pearson', min_periods=1)
-#plt.matshow(a.corr(method='pearson'))
 print("Correlation full signal")
 print(corr)
 print("Correlation drop NaN")
 print(corr_dropna)
-plt.scatter(k_dropna['Kinect'],k_dropna['LUXmeter'],c='blue')
-
+#plt.scatter(k_dropna['Kinect'],k_dropna['LUXmeter'],c='blue')
 plt.scatter(k['Kinect'],k['LUXmeter'],c='red')
-plt.plot(k['Kinect'],(m*k['Kinect'])+b,'r')
+plt.plot(k['Kinect'],(m*k['Kinect'])+b,'k')
+#plt.plot(k['Kinect'],(fit_fn(k['Kinect'])),'k')
 
 
 #"""Normalization"""
@@ -87,9 +100,8 @@ plt.plot(k['Kinect'],(m*k['Kinect'])+b,'r')
 #min_max_scaler = preprocessing.MinMaxScaler()
 #x_scaled = min_max_scaler.fit_transform(x)
 #corr_df["LUXmeter"] = x_scaled
-#
-#"""Scatter Plot"""
-#corr_df.plot(kind='scatter',x='Kinect',y='LUXmeter')
+
+
 
 
 
