@@ -59,11 +59,11 @@ print(delay_index_lk_dropna)
 k = corr_df.drop(columns=['LUXmeter'])
 l = corr_df.drop(columns=['Kinect'])
 plotData.plotLUXcompared(l,k,'plot corr_df before shifting (with NaN)','Kinect')
-k = k.shift(periods=delay_index_lk)
-#plotData.plotLUXcompared(l,k,'after shifting kinect shift (with NaN)','Kinect')
+k = k.shift(periods=-delay_index_kl+5)
+plotData.plotLUXcompared(l,k,'after shifting kinect shift (with NaN)','Kinect')
 k['LUXmeter'] = l['LUXmeter']
 k = k.dropna()
-plotData.plotLUXcompared(k.drop(columns=['Kinect']),k.drop(columns=['LUXmeter']),'plot corr_df before shifting (Full signal)','Kinect')
+plotData.plotLUXcompared(k.drop(columns=['Kinect']),k.drop(columns=['LUXmeter']),'plot corr_df after shifting (Full signal)','Kinect')
 
 # without NaN
 k_dropna = corr_df_dropna.drop(columns=['LUXmeter'])
@@ -78,7 +78,7 @@ k_dropna = k_dropna.dropna()
 """ Find Linear correlation Pearson """ 
 # with NaN
 corr = k.corr(method='pearson', min_periods=1)
-m,b = np.polyfit(k_dropna['Kinect'],k_dropna['LUXmeter'],1)
+m,b = np.polyfit(k['Kinect'],k['LUXmeter'],1)
 strOut = "m = %d , b = %d"%(m,b)
 print(strOut)
 #fit = np.polyfit(k_dropna['Kinect'],k_dropna['LUXmeter'],1)
